@@ -1,13 +1,20 @@
-export type Severity = 'low' | 'medium' | 'high' | 'critical';
-export type Status = 'open' | 'in_progress' | 'resolved';
-
-export interface Incident {
-  id: string;
-  title: string;
-  description: string;
-  severity: Severity;
-  status: Status;
-  createdAt: string;
+export interface User {
+id: string;
+email: string;
+passwordHash: string;
+role: 'DEVELOPER' | 'LEAD';
+}
+export type Environment = 'DEVELOPMENT' | 'STAGING' | 'PRODUCTION';
+export type ServiceStatus = 'HEALTHY' | 'DEGRADED' | 'DOWN';
+export interface Microservice {
+id: string;
+name: string;
+endpointUrl: string;
+environment: Environment;
+status: ServiceStatus;
+version: string;
+ownerEmail: string;
+createdAt: string;
 }
 
 export interface AuthUser {
@@ -16,20 +23,19 @@ export interface AuthUser {
 }
 
 export interface State {
-  user: AuthUser | null;
+  user: { id: string; email: string; role: string } | null;
   token: string | null;
-  incidents: Incident[];
+  services: Microservice[];
+  selectedEnvironment: Environment | 'ALL';
   loading: boolean;
   error: string | null;
 }
-
 export type Action =
-  | { type: 'SET_AUTH'; payload: { user: AuthUser; token: string } }
-  | { type: 'FETCH_SUCCESS'; payload: Incident[] }
-  | { type: 'CREATE_SUCCESS'; payload: Incident }
-  | { type: 'UPDATE_SUCCESS'; payload: Incident }
-  | { type: 'DELETE_SUCCESS'; payload: string }
-  | { type: 'SET_ERROR'; payload: string }
-  // Additions beyond the spec, needed for a working UI:
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'LOGOUT' };
+| { type: 'SET_AUTH'; payload: { user: any; token: string } }
+| { type: 'LOGOUT' }
+| { type: 'SET_ENV_FILTER'; payload: Environment | 'ALL' }
+| { type: 'FETCH_SERVICES_SUCCESS'; payload: Microservice[] }
+| { type: 'CREATE_SERVICE_SUCCESS'; payload: Microservice }
+| { type: 'UPDATE_SERVICE_SUCCESS'; payload: Microservice }
+| { type: 'DELETE_SERVICE_SUCCESS'; payload: string }
+| { type: 'SET_ERROR'; payload: string | null };
